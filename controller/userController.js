@@ -83,7 +83,7 @@ const signIn = async (req, res) => {
     const isExistingUser = await User.findOne({ email: email });
 
     if (!isExistingUser) {
-      res.status(401).json({
+      return res.status(401).json({
         message: "User not found",
         status: 401,
         data: {},
@@ -123,6 +123,7 @@ const getProfile = async (req, res) => {
     message: "Profiles",
     status: 200,
     data: user,
+    
   });
 };
 
