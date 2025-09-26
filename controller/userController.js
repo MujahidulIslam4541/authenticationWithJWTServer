@@ -8,6 +8,39 @@ const CreateJwtToken = (payload) => {
   });
 };
 
+// verify jwt  token
+const verifyToken = async (req, res, next) => {
+  const headerToken = req.headers["authorization"];
+  console.log(headerToken);
+
+  if (!headerToken) {
+    return res.status(401).json({
+      message: "Authorization header missing",
+      status: 401,
+      data: {},
+    });
+  }
+  const token = headerToken.split(" ")[1];
+  if (!token) {
+    res.status(404).json({
+      message: "Token not valid",
+      status: 404,
+      data: {},
+    });
+  }
+  jwt.verify(token, process.env.JWT_SECRET, (err, payload) => {
+    if (err) {
+      res.status(404).json({
+        message: "token not valid",
+        status: 404,
+        data: {},
+      });
+    }
+    req.user = payload;
+    next();
+  });
+};
+
 const SignUp = async (req, res) => {
   try {
     const { firstName, lastName, email, password } = req.body;
@@ -84,4 +117,13 @@ const signIn = async (req, res) => {
   }
 };
 
-module.exports = { SignUp, signIn };
+const getProfile = async (req, res) => {
+  const user = await User.findOne({ _id: req.user.id }).select("-password -__v");
+  res.status(200).json({
+    message: "Profiles",
+    status: 200,
+    data: user,
+  });
+};
+
+module.exports = { SignUp, signIn, getProfile, verifyToken };
