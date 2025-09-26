@@ -1,16 +1,22 @@
 require("dotenv").config();
 const express = require("express");
-const mongoose = require("mongoose");
+const jwt = require("jsonwebtoken");
+const bodyParser = require("body-parser");
 const connectDb = require("./config/db");
+const route = require("./routes/userRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(express.json());
-app.use(express.urlencoded());
+// middleware
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded());
 
 // Connect to MongoDB
-connectDb()
+connectDb();
+
+// routes
+app.use(route);
 
 app.get("/", (req, res) => {
   res.send("Hello, World!");
